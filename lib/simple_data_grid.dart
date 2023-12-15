@@ -1249,7 +1249,6 @@ class SilkGridView extends StatelessWidget {
   final GlobalKey<_SilkGridSimpleViewState> _gridKey = GlobalKey<_SilkGridSimpleViewState>();
   final GlobalKey<_SilkGridFooterState> _footerKey = GlobalKey<_SilkGridFooterState>();
   //
-
   final List<dynamic>? rows;
   final LoadRows? loadRows;
   final SilkGridColumns columns;

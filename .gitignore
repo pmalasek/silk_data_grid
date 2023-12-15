@@ -41,6 +41,8 @@ build/
 **/linux/
 #MacOS
 **/macos/
+#windows
+**/windows/
 
 # Android related
 **/example/android/
@@ -51,3 +53,5 @@ build/
 **/example/linux/
 #MacOS
 **/example/macos/
+#windows
+**/example/windows/
