@@ -34,8 +34,20 @@ build/
 
 # Android related
 **/android/
-
 # iOS/XCode related
 **/ios/
-
 **/web/
+#linux
+**/linux/
+#MacOS
+**/macos/
+
+# Android related
+**/example/android/
+# iOS/XCode related
+**/example/ios/
+**/example/web/
+#linux
+**/example/linux/
+#MacOS
+**/example/macos/
