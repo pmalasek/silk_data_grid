@@ -6,6 +6,7 @@ import 'package:silk_data_grid/silk_data_grid.dart';
 
 //
 // flutter build web --base-href "/"; scp -r build/web/* 172.24.0.14:/home/devel/www/
+//
 void main() {
   runApp(const MyApp());
 }
@@ -162,28 +163,19 @@ class SilkGridViewLoader extends StatelessWidget {
                       SilkGridFooterFieldRowValue(field: 'company_name', value: 9876.5),
                     ],
                   ),
-                  // SilkGridFooterRow(
-                  //   values: [
-                  //     SilkGridFooterFieldRowValue(field: 'fuel', value: 9876.5),
-                  //     SilkGridFooterTextRowValue(value: "Toto je text ZA"),
-                  //   ],
-                  // ),
-                  // SilkGridFooterRow(
-                  //   values: [
-                  //     SilkGridFooterFieldRowValue(field: 'vin', value: 9876.5),
-                  //     SilkGridFooterFieldRowValue(field: 'fuel', value: 9876.5),
-                  //     SilkGridFooterTextRowValue(value: "Toto je text ZA"),
-                  //   ],
-                  // ),
-                  // SilkGridFooterRow(
-                  //   values: [
-                  //     SilkGridFooterTextRowValue(value: "Toto je text PRED"),
-                  //     SilkGridFooterFieldRowValue(field: 'vin', value: 9876.5),
-                  //     SilkGridFooterTextRowValue(value: "Toto je text MEZI"),
-                  //     SilkGridFooterFieldRowValue(field: 'fuel', value: 9876.5),
-                  //     SilkGridFooterTextRowValue(value: "Toto je text ZA"),
-                  //   ],
-                  // ),
+                  SilkGridFooterRow(
+                    values: [
+                      SilkGridFooterFieldRowValue(field: 'fuel', value: 9876.5),
+                      SilkGridFooterTextRowValue(value: "Toto je text ZA"),
+                    ],
+                  ),
+                  SilkGridFooterRow(
+                    values: [
+                      SilkGridFooterFieldRowValue(field: 'vin', value: 9876.5),
+                      SilkGridFooterFieldRowValue(field: 'fuel', value: 9876.5),
+                      SilkGridFooterTextRowValue(value: "Toto je text ZA"),
+                    ],
+                  ),
                   SilkGridFooterRow(
                     values: [
                       SilkGridFooterTextRowValue(value: "První text"),
