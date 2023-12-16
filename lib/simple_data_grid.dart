@@ -1,13 +1,11 @@
-library silk_data_grid;
-
 import 'dart:async';
+import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:two_dimensional_scrollables/two_dimensional_scrollables.dart';
-
-enum SilkFieldType { string, int, double, money, date, time, datetime, bool }
 
 enum SilkFieldSort { none, asc, desc }
 
@@ -46,7 +44,6 @@ class SilkGridSortInfo {
 abstract class SilkGridField {
   final String label;
   final String field;
-  final SilkFieldType fieldType;
   final double? size;
   double minSize;
   final bool hidden;
@@ -55,13 +52,13 @@ abstract class SilkGridField {
   final Widget? render;
   final FormatFieldText? formatText;
   final BuildCustomWidget? cellBuilder;
+  final Locale? locale;
 
   double _internalSize = 0;
 
   SilkGridField({
     required this.label,
     required this.field,
-    required this.fieldType,
     this.size,
     this.minSize = 20,
     this.hidden = false,
@@ -70,6 +67,7 @@ abstract class SilkGridField {
     this.render,
     this.formatText,
     this.cellBuilder,
+    this.locale,
   }) {
     if (size != null) {
       _internalSize = size!;
@@ -82,15 +80,32 @@ abstract class SilkGridField {
   }
 
   String formatValue(dynamic value) {
-    return value.toString();
+    return "XXX $value";
   }
+
+  Alignment get alignment {
+    return Alignment.centerLeft;
+  }
+
+  SilkGridField copyWith({
+    String? label,
+    String? field,
+    double? size,
+    double? minSize,
+    bool? hidden,
+    bool? sortable,
+    bool? resizable,
+    Widget? render,
+    FormatFieldText? formatText,
+    BuildCustomWidget? cellBuilder,
+    Locale? locale,
+  });
 }
 
 class SilkGridStringField extends SilkGridField {
   SilkGridStringField({
     required super.label,
     required super.field,
-    required super.fieldType,
     super.size,
     super.minSize = 20,
     super.hidden = false,
@@ -99,10 +114,41 @@ class SilkGridStringField extends SilkGridField {
     super.render,
     super.formatText,
     super.cellBuilder,
+    super.locale,
   });
   @override
   String formatValue(dynamic value) {
-    return value.toString();
+    if (value == null) return "";
+    return "$value".replaceAll("\n", "");
+  }
+
+  @override
+  SilkGridField copyWith({
+    String? label,
+    String? field,
+    double? size,
+    double? minSize,
+    bool? hidden,
+    bool? sortable,
+    bool? resizable,
+    Widget? render,
+    FormatFieldText? formatText,
+    BuildCustomWidget? cellBuilder,
+    Locale? locale,
+  }) {
+    return SilkGridStringField(
+      label: label ?? this.label,
+      field: field ?? this.field,
+      size: size ?? this.size,
+      minSize: minSize ?? this.minSize,
+      hidden: hidden ?? this.hidden,
+      sortable: sortable ?? this.sortable,
+      resizable: resizable ?? this.resizable,
+      render: render ?? this.render,
+      formatText: formatText ?? this.formatText,
+      cellBuilder: cellBuilder ?? this.cellBuilder,
+      locale: locale ?? this.locale,
+    );
   }
 }
 
@@ -110,7 +156,6 @@ class SilkGridIntField extends SilkGridField {
   SilkGridIntField({
     required super.label,
     required super.field,
-    required super.fieldType,
     super.size,
     super.minSize = 20,
     super.hidden = false,
@@ -119,18 +164,59 @@ class SilkGridIntField extends SilkGridField {
     super.render,
     super.formatText,
     super.cellBuilder,
+    super.locale,
   });
   @override
   String formatValue(dynamic value) {
-    return value.toString();
+    if (value == null) return "";
+    if (locale == null) {
+      return (value as int).toStringAsFixed(0);
+    } else {
+      return NumberFormat.decimalPattern(locale!.languageCode).format(value as int);
+    }
+  }
+
+  @override
+  Alignment get alignment {
+    return Alignment.centerRight;
+  }
+
+  @override
+  SilkGridField copyWith({
+    String? label,
+    String? field,
+    double? size,
+    double? minSize,
+    bool? hidden,
+    bool? sortable,
+    bool? resizable,
+    Widget? render,
+    FormatFieldText? formatText,
+    BuildCustomWidget? cellBuilder,
+    Locale? locale,
+  }) {
+    return SilkGridIntField(
+      label: label ?? this.label,
+      field: field ?? this.field,
+      size: size ?? this.size,
+      minSize: minSize ?? this.minSize,
+      hidden: hidden ?? this.hidden,
+      sortable: sortable ?? this.sortable,
+      resizable: resizable ?? this.resizable,
+      render: render ?? this.render,
+      formatText: formatText ?? this.formatText,
+      cellBuilder: cellBuilder ?? this.cellBuilder,
+      locale: locale ?? this.locale,
+    );
   }
 }
 
 class SilkGridDoubleField extends SilkGridField {
+  final int precision;
   SilkGridDoubleField({
     required super.label,
     required super.field,
-    required super.fieldType,
+    this.precision = 3,
     super.size,
     super.minSize = 20,
     super.hidden = false,
@@ -139,10 +225,52 @@ class SilkGridDoubleField extends SilkGridField {
     super.render,
     super.formatText,
     super.cellBuilder,
+    super.locale,
   });
   @override
   String formatValue(dynamic value) {
-    return value.toString();
+    if (value == null) return "-";
+    if (locale == null) {
+      return (value as double).toStringAsFixed(precision);
+    } else {
+      return NumberFormat.decimalPatternDigits(locale: locale!.languageCode, decimalDigits: precision).format(value as double);
+    }
+  }
+
+  @override
+  Alignment get alignment {
+    return Alignment.centerRight;
+  }
+
+  @override
+  SilkGridField copyWith({
+    String? label,
+    String? field,
+    int? precision,
+    double? size,
+    double? minSize,
+    bool? hidden,
+    bool? sortable,
+    bool? resizable,
+    Widget? render,
+    FormatFieldText? formatText,
+    BuildCustomWidget? cellBuilder,
+    Locale? locale,
+  }) {
+    return SilkGridDoubleField(
+      label: label ?? this.label,
+      field: field ?? this.field,
+      precision: precision ?? this.precision,
+      size: size ?? this.size,
+      minSize: minSize ?? this.minSize,
+      hidden: hidden ?? this.hidden,
+      sortable: sortable ?? this.sortable,
+      resizable: resizable ?? this.resizable,
+      render: render ?? this.render,
+      formatText: formatText ?? this.formatText,
+      cellBuilder: cellBuilder ?? this.cellBuilder,
+      locale: locale ?? this.locale,
+    );
   }
 }
 
@@ -150,7 +278,6 @@ class SilkGridMoneyField extends SilkGridField {
   SilkGridMoneyField({
     required super.label,
     required super.field,
-    required super.fieldType,
     super.size,
     super.minSize = 20,
     super.hidden = false,
@@ -159,10 +286,50 @@ class SilkGridMoneyField extends SilkGridField {
     super.render,
     super.formatText,
     super.cellBuilder,
+    super.locale,
   });
   @override
   String formatValue(dynamic value) {
-    return value.toString();
+    if (value == null) return "-";
+    if (locale == null) {
+      return (value as double).toStringAsFixed(2);
+    } else {
+      return NumberFormat.simpleCurrency(locale: locale!.languageCode).format(value as double);
+    }
+  }
+
+  @override
+  Alignment get alignment {
+    return Alignment.centerRight;
+  }
+
+  @override
+  SilkGridField copyWith({
+    String? label,
+    String? field,
+    double? size,
+    double? minSize,
+    bool? hidden,
+    bool? sortable,
+    bool? resizable,
+    Widget? render,
+    FormatFieldText? formatText,
+    BuildCustomWidget? cellBuilder,
+    Locale? locale,
+  }) {
+    return SilkGridMoneyField(
+      label: label ?? this.label,
+      field: field ?? this.field,
+      size: size ?? this.size,
+      minSize: minSize ?? this.minSize,
+      hidden: hidden ?? this.hidden,
+      sortable: sortable ?? this.sortable,
+      resizable: resizable ?? this.resizable,
+      render: render ?? this.render,
+      formatText: formatText ?? this.formatText,
+      cellBuilder: cellBuilder ?? this.cellBuilder,
+      locale: locale ?? this.locale,
+    );
   }
 }
 
@@ -170,7 +337,6 @@ class SilkGridDateField extends SilkGridField {
   SilkGridDateField({
     required super.label,
     required super.field,
-    required super.fieldType,
     super.size,
     super.minSize = 20,
     super.hidden = false,
@@ -179,10 +345,57 @@ class SilkGridDateField extends SilkGridField {
     super.render,
     super.formatText,
     super.cellBuilder,
+    super.locale,
   });
+
   @override
   String formatValue(dynamic value) {
-    return value.toString();
+    if (value == null) return "-";
+    if (value is String) {
+      if (locale != null) {
+        DateTime dt = DateTime.parse(value);
+        DateFormat f = DateFormat.yMd(locale!.languageCode);
+        return f.format(dt.toLocal());
+      } else {
+        return value.toString();
+      }
+    } else {
+      return value.toString();
+    }
+  }
+
+  @override
+  Alignment get alignment {
+    return Alignment.centerRight;
+  }
+
+  @override
+  SilkGridField copyWith({
+    String? label,
+    String? field,
+    double? size,
+    double? minSize,
+    bool? hidden,
+    bool? sortable,
+    bool? resizable,
+    Widget? render,
+    FormatFieldText? formatText,
+    BuildCustomWidget? cellBuilder,
+    Locale? locale,
+  }) {
+    return SilkGridDateField(
+      label: label ?? this.label,
+      field: field ?? this.field,
+      size: size ?? this.size,
+      minSize: minSize ?? this.minSize,
+      hidden: hidden ?? this.hidden,
+      sortable: sortable ?? this.sortable,
+      resizable: resizable ?? this.resizable,
+      render: render ?? this.render,
+      formatText: formatText ?? this.formatText,
+      cellBuilder: cellBuilder ?? this.cellBuilder,
+      locale: locale ?? this.locale,
+    );
   }
 }
 
@@ -190,7 +403,6 @@ class SilkGridDateTimeField extends SilkGridField {
   SilkGridDateTimeField({
     required super.label,
     required super.field,
-    required super.fieldType,
     super.size,
     super.minSize = 20,
     super.hidden = false,
@@ -199,10 +411,56 @@ class SilkGridDateTimeField extends SilkGridField {
     super.render,
     super.formatText,
     super.cellBuilder,
+    super.locale,
   });
   @override
   String formatValue(dynamic value) {
-    return value.toString();
+    if (value == null) return "-";
+    if (value is String) {
+      if (locale != null) {
+        DateTime dt = DateTime.parse(value);
+        DateFormat f = DateFormat.yMd(locale!.languageCode);
+        return "${DateFormat.yMd(locale!.languageCode).format(dt.toLocal())} ${DateFormat.Hms(locale!.languageCode).format(dt.toLocal())}";
+      } else {
+        return value.toString();
+      }
+    } else {
+      return value.toString();
+    }
+  }
+
+  @override
+  Alignment get alignment {
+    return Alignment.centerRight;
+  }
+
+  @override
+  SilkGridField copyWith({
+    String? label,
+    String? field,
+    double? size,
+    double? minSize,
+    bool? hidden,
+    bool? sortable,
+    bool? resizable,
+    Widget? render,
+    FormatFieldText? formatText,
+    BuildCustomWidget? cellBuilder,
+    Locale? locale,
+  }) {
+    return SilkGridDateTimeField(
+      label: label ?? this.label,
+      field: field ?? this.field,
+      size: size ?? this.size,
+      minSize: minSize ?? this.minSize,
+      hidden: hidden ?? this.hidden,
+      sortable: sortable ?? this.sortable,
+      resizable: resizable ?? this.resizable,
+      render: render ?? this.render,
+      formatText: formatText ?? this.formatText,
+      cellBuilder: cellBuilder ?? this.cellBuilder,
+      locale: locale ?? this.locale,
+    );
   }
 }
 
@@ -210,7 +468,6 @@ class SilkGridTimeField extends SilkGridField {
   SilkGridTimeField({
     required super.label,
     required super.field,
-    required super.fieldType,
     super.size,
     super.minSize = 20,
     super.hidden = false,
@@ -219,10 +476,56 @@ class SilkGridTimeField extends SilkGridField {
     super.render,
     super.formatText,
     super.cellBuilder,
+    super.locale,
   });
   @override
   String formatValue(dynamic value) {
-    return value.toString();
+    if (value == null) return "-";
+    if (value is String) {
+      if (locale != null) {
+        DateTime dt = DateTime.parse(value);
+        DateFormat f = DateFormat.yMd(locale!.languageCode);
+        return DateFormat.Hms(locale!.languageCode).format(dt.toLocal());
+      } else {
+        return value.toString();
+      }
+    } else {
+      return value.toString();
+    }
+  }
+
+  @override
+  Alignment get alignment {
+    return Alignment.centerRight;
+  }
+
+  @override
+  SilkGridField copyWith({
+    String? label,
+    String? field,
+    double? size,
+    double? minSize,
+    bool? hidden,
+    bool? sortable,
+    bool? resizable,
+    Widget? render,
+    FormatFieldText? formatText,
+    BuildCustomWidget? cellBuilder,
+    Locale? locale,
+  }) {
+    return SilkGridTimeField(
+      label: label ?? this.label,
+      field: field ?? this.field,
+      size: size ?? this.size,
+      minSize: minSize ?? this.minSize,
+      hidden: hidden ?? this.hidden,
+      sortable: sortable ?? this.sortable,
+      resizable: resizable ?? this.resizable,
+      render: render ?? this.render,
+      formatText: formatText ?? this.formatText,
+      cellBuilder: cellBuilder ?? this.cellBuilder,
+      locale: locale ?? this.locale,
+    );
   }
 }
 
@@ -230,7 +533,6 @@ class SilkGridBoolField extends SilkGridField {
   SilkGridBoolField({
     required super.label,
     required super.field,
-    required super.fieldType,
     super.size,
     super.minSize = 20,
     super.hidden = false,
@@ -239,41 +541,87 @@ class SilkGridBoolField extends SilkGridField {
     super.render,
     super.formatText,
     super.cellBuilder,
+    super.locale,
   });
   @override
   String formatValue(dynamic value) {
-    return value.toString();
+    return "bool $value";
+  }
+
+  @override
+  Alignment get alignment {
+    return Alignment.center;
+  }
+
+  @override
+  SilkGridField copyWith({
+    String? label,
+    String? field,
+    double? size,
+    double? minSize,
+    bool? hidden,
+    bool? sortable,
+    bool? resizable,
+    Widget? render,
+    FormatFieldText? formatText,
+    BuildCustomWidget? cellBuilder,
+    Locale? locale,
+  }) {
+    return SilkGridBoolField(
+      label: label ?? this.label,
+      field: field ?? this.field,
+      size: size ?? this.size,
+      minSize: minSize ?? this.minSize,
+      hidden: hidden ?? this.hidden,
+      sortable: sortable ?? this.sortable,
+      resizable: resizable ?? this.resizable,
+      render: render ?? this.render,
+      formatText: formatText ?? this.formatText,
+      cellBuilder: cellBuilder ?? this.cellBuilder,
+      locale: locale ?? this.locale,
+    );
   }
 }
 
 ///
 class SilkGridColumns {
-  final List<SilkGridField> l = [];
+  final List<SilkGridField> listFields = [];
+  final Locale? locale;
   int _visibleColumnCount = 0;
 
-  SilkGridColumns({List<SilkGridField>? items}) {
+  SilkGridColumns({
+    List<SilkGridField>? items,
+    this.locale,
+  }) {
     if (items != null) {
       for (SilkGridField itm in items) {
         if (!itm.hidden) _visibleColumnCount++;
-        l.add(itm);
+        listFields.add(itm.copyWith(locale: locale));
       }
     }
   }
 
-  int get length => l.length;
+  int get length => listFields.length;
 
   int get visibleCount {
     return _visibleColumnCount;
   }
 
-  SilkGridField operator [](int index) => l[index];
+  SilkGridField operator [](int index) => listFields[index];
 
   List<SilkGridField> get visibleColumns {
     List<SilkGridField> result = [];
-    for (SilkGridField itm in l) {
+    for (SilkGridField itm in listFields) {
       if (!itm.hidden) result.add(itm);
     }
     return result;
+  }
+
+  SilkGridColumns copyWith({List<SilkGridField>? items, Locale? locale}) {
+    return SilkGridColumns(
+      items: items ?? listFields,
+      locale: locale ?? this.locale,
+    );
   }
 }
 
@@ -358,43 +706,6 @@ class _SilkGridFooterState extends State<_SilkGridFooter> {
     widget.gridKey.currentState!._horizontalController.jumpTo(_footerHorizontalController.offset);
   }
 
-  // Widget _generateRow(SilkGridFooterRow row) {
-  //   final List<SilkGridField> columns = widget._owner._columns.visibleColumns;
-  //   TextStyle textStyle = Theme.of(context).textTheme.labelSmall!.copyWith(
-  //         color: widget._owner._toolbarIconColor,
-  //         fontWeight: FontWeight.bold,
-  //         overflow: TextOverflow.ellipsis,
-  //       );
-  //   List<Widget> cols = [];
-  //   int idx = 1;
-  //   for (SilkGridField column in columns) {
-  //     cols.add(
-  //       Container(
-  //         decoration: BoxDecoration(border: Border(right: BorderSide(color: widget._owner._borderColor))),
-  //         alignment: Alignment.center,
-  //         width: widget._owner._getFieldWidth(idx),
-  //         height: widget._owner._rowHeight,
-  //         child: Text(
-  //           column.label,
-  //           style: textStyle,
-  //         ),
-  //       ),
-  //     );
-  //     idx++;
-  //   }
-  //   return Container(
-  //     decoration: BoxDecoration(
-  //       color: widget._owner._toolbarColor,
-  //       border: Border(
-  //         top: BorderSide(color: widget._owner._borderColor),
-  //       ),
-  //       //border: Border.all(color: widget._owner._borderColor),
-  //     ),
-  //     child: Row(
-  //       children: cols,
-  //     ),
-  //   );
-  // }
   int _findFieldIndex(String field) {
     for (int idx = 0; idx < _columns.length; idx++) {
       if (_columns[idx].field == field) return idx;
@@ -822,12 +1133,7 @@ class _SilkGridSimpleViewState<T extends _SilkGridSimpleView> extends State<_Sil
 
   //
   Alignment _getFieldAlignment(int column) {
-    switch (_columns.visibleColumns[column].fieldType) {
-      case SilkFieldType.string:
-        return Alignment.centerLeft;
-      default:
-        return Alignment.centerRight;
-    }
+    return _columns.visibleColumns[column].alignment;
   }
 
   double _getFieldWidth(int column) {
@@ -1199,7 +1505,7 @@ class _SilkGridSimpleViewState<T extends _SilkGridSimpleView> extends State<_Sil
         text = col.formatText!(vicinity.row + 1, vicinity.column - 1, _columns, data);
       } else {
         if (data[col.field] != null) {
-          text = data[col.field].toString().replaceAll("\n", "");
+          text = col.formatValue(data[col.field]);
         } else {
           text = "";
         }
@@ -1323,7 +1629,7 @@ class _SilkGridSimpleViewState<T extends _SilkGridSimpleView> extends State<_Sil
   @override
   void initState() {
     super.initState();
-    _columns = widget.columns;
+    _columns = widget.columns.copyWith(locale: widget.locale);
     if (widget.rows != null) {
       _rowBuff = List.from(widget.rows!);
       _rowCount = _rowBuff.length + 1;
@@ -1337,6 +1643,7 @@ class _SilkGridSimpleViewState<T extends _SilkGridSimpleView> extends State<_Sil
       }
     }
     _horizontalController.addListener(_refreshFooterColumsPosition);
+    initializeDateFormatting(widget.locale.toLanguageTag(), null);
   }
 
   @override
