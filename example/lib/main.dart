@@ -107,20 +107,17 @@ class SilkGridViewLoader extends StatelessWidget {
               // toolbarIconColor: Colors.red,
               columns: SilkGridColumns(
                 items: [
-                  SilkGridField(label: "id", field: "recid", fieldType: SilkFieldType.int, size: 60, hidden: true),
-                  SilkGridField(label: "SPZ", field: "spz", fieldType: SilkFieldType.string, size: 100),
-                  SilkGridField(label: "VIN", field: "vin", fieldType: SilkFieldType.string, size: 150),
-                  SilkGridField(
+                  SilkGridIntField(label: "id", field: "recid", fieldType: SilkFieldType.int, size: 60, hidden: true),
+                  SilkGridStringField(label: "SPZ", field: "spz", fieldType: SilkFieldType.string, size: 100),
+                  SilkGridStringField(label: "VIN", field: "vin", fieldType: SilkFieldType.string, size: 150),
+                  SilkGridStringField(
                     label: "Značka",
                     field: "brand",
                     fieldType: SilkFieldType.string,
                     minSize: 100,
                     sortable: true,
-                    formatText: (int row, int col, SilkGridColumns columns, record) {
-                      return "${columns[col].field} -  ${record['brand']} ${record['model']}";
-                    },
                   ),
-                  SilkGridField(
+                  SilkGridStringField(
                     label: "Barva",
                     field: "color",
                     fieldType: SilkFieldType.string,
@@ -129,13 +126,13 @@ class SilkGridViewLoader extends StatelessWidget {
                       return "${record['color'].toString()} - ${record['color']}";
                     },
                   ),
-                  SilkGridField(label: "Datum pořízení", field: "date_buy", fieldType: SilkFieldType.date, size: 100),
-                  SilkGridField(label: "Vlastník", field: "company_name", fieldType: SilkFieldType.string, minSize: 100),
-                  SilkGridField(label: "Nájemce", field: "najem_firma", fieldType: SilkFieldType.string, minSize: 100),
-                  SilkGridField(label: "Uživatel", field: "person_name", fieldType: SilkFieldType.string, minSize: 100),
-                  SilkGridField(label: "Palivo", field: "fuel", fieldType: SilkFieldType.string, size: 100),
-                  SilkGridField(label: "Max hmotn.", field: "max_load", fieldType: SilkFieldType.int, size: 80),
-                  SilkGridField(
+                  SilkGridDateTimeField(label: "Datum pořízení", field: "date_buy", fieldType: SilkFieldType.date, size: 100),
+                  SilkGridStringField(label: "Vlastník", field: "company_name", fieldType: SilkFieldType.string, minSize: 100),
+                  SilkGridStringField(label: "Nájemce", field: "najem_firma", fieldType: SilkFieldType.string, minSize: 100),
+                  SilkGridStringField(label: "Uživatel", field: "person_name", fieldType: SilkFieldType.string, minSize: 100),
+                  SilkGridStringField(label: "Palivo", field: "fuel", fieldType: SilkFieldType.string, size: 100),
+                  SilkGridIntField(label: "Max hmotn.", field: "max_load", fieldType: SilkFieldType.int, size: 80),
+                  SilkGridStringField(
                     label: "Stav",
                     field: "state",
                     fieldType: SilkFieldType.string,

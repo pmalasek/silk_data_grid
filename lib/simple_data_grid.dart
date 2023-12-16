@@ -42,7 +42,8 @@ class SilkGridSortInfo {
   }
 }
 
-class SilkGridField {
+/// Field types
+abstract class SilkGridField {
   final String label;
   final String field;
   final SilkFieldType fieldType;
@@ -80,11 +81,172 @@ class SilkGridField {
     return _internalSize;
   }
 
-  String formatValue() {
-    return "";
+  String formatValue(dynamic value) {
+    return value.toString();
   }
 }
 
+class SilkGridStringField extends SilkGridField {
+  SilkGridStringField({
+    required super.label,
+    required super.field,
+    required super.fieldType,
+    super.size,
+    super.minSize = 20,
+    super.hidden = false,
+    super.sortable = true,
+    super.resizable = true,
+    super.render,
+    super.formatText,
+    super.cellBuilder,
+  });
+  @override
+  String formatValue(dynamic value) {
+    return value.toString();
+  }
+}
+
+class SilkGridIntField extends SilkGridField {
+  SilkGridIntField({
+    required super.label,
+    required super.field,
+    required super.fieldType,
+    super.size,
+    super.minSize = 20,
+    super.hidden = false,
+    super.sortable = true,
+    super.resizable = true,
+    super.render,
+    super.formatText,
+    super.cellBuilder,
+  });
+  @override
+  String formatValue(dynamic value) {
+    return value.toString();
+  }
+}
+
+class SilkGridDoubleField extends SilkGridField {
+  SilkGridDoubleField({
+    required super.label,
+    required super.field,
+    required super.fieldType,
+    super.size,
+    super.minSize = 20,
+    super.hidden = false,
+    super.sortable = true,
+    super.resizable = true,
+    super.render,
+    super.formatText,
+    super.cellBuilder,
+  });
+  @override
+  String formatValue(dynamic value) {
+    return value.toString();
+  }
+}
+
+class SilkGridMoneyField extends SilkGridField {
+  SilkGridMoneyField({
+    required super.label,
+    required super.field,
+    required super.fieldType,
+    super.size,
+    super.minSize = 20,
+    super.hidden = false,
+    super.sortable = true,
+    super.resizable = true,
+    super.render,
+    super.formatText,
+    super.cellBuilder,
+  });
+  @override
+  String formatValue(dynamic value) {
+    return value.toString();
+  }
+}
+
+class SilkGridDateField extends SilkGridField {
+  SilkGridDateField({
+    required super.label,
+    required super.field,
+    required super.fieldType,
+    super.size,
+    super.minSize = 20,
+    super.hidden = false,
+    super.sortable = true,
+    super.resizable = true,
+    super.render,
+    super.formatText,
+    super.cellBuilder,
+  });
+  @override
+  String formatValue(dynamic value) {
+    return value.toString();
+  }
+}
+
+class SilkGridDateTimeField extends SilkGridField {
+  SilkGridDateTimeField({
+    required super.label,
+    required super.field,
+    required super.fieldType,
+    super.size,
+    super.minSize = 20,
+    super.hidden = false,
+    super.sortable = true,
+    super.resizable = true,
+    super.render,
+    super.formatText,
+    super.cellBuilder,
+  });
+  @override
+  String formatValue(dynamic value) {
+    return value.toString();
+  }
+}
+
+class SilkGridTimeField extends SilkGridField {
+  SilkGridTimeField({
+    required super.label,
+    required super.field,
+    required super.fieldType,
+    super.size,
+    super.minSize = 20,
+    super.hidden = false,
+    super.sortable = true,
+    super.resizable = true,
+    super.render,
+    super.formatText,
+    super.cellBuilder,
+  });
+  @override
+  String formatValue(dynamic value) {
+    return value.toString();
+  }
+}
+
+class SilkGridBoolField extends SilkGridField {
+  SilkGridBoolField({
+    required super.label,
+    required super.field,
+    required super.fieldType,
+    super.size,
+    super.minSize = 20,
+    super.hidden = false,
+    super.sortable = true,
+    super.resizable = true,
+    super.render,
+    super.formatText,
+    super.cellBuilder,
+  });
+  @override
+  String formatValue(dynamic value) {
+    return value.toString();
+  }
+}
+
+///
 class SilkGridColumns {
   final List<SilkGridField> l = [];
   int _visibleColumnCount = 0;
