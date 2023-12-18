@@ -129,7 +129,7 @@ class SilkGridViewLoader extends StatelessWidget {
                         ),
                       );
                     },
-                  ),
+                  // ),
                 ],
               ),
               rows: snapshot.data,

@@ -1118,7 +1118,8 @@ class _SilkGridSimpleViewState<T extends _SilkGridSimpleView> extends State<_Sil
       // print("col : $col from: $from to: $to");
       return (from, to);
     }
-    throw ("ERROR in getColumnPosition - col out of range - $col / ${_columns.visibleCount}");
+    return (0, 0);
+    // throw ("ERROR in _getColumnPosition - col out of range - $col / ${_columns.visibleCount}");
   }
 
   (double, double) _getRowPosition(int row) {
@@ -1321,7 +1322,7 @@ class _SilkGridSimpleViewState<T extends _SilkGridSimpleView> extends State<_Sil
         setState(() {});
       }
     } else {
-      if (widget.multiselect) {
+      if (widget.multiselect && _columns.visibleColumns.isNotEmpty) {
         if (_selectedRows.isNotEmpty) {
           _selectedRows.clear();
         } else {
@@ -1403,7 +1404,7 @@ class _SilkGridSimpleViewState<T extends _SilkGridSimpleView> extends State<_Sil
 
   Widget _drawHeaderCell(BuildContext context, TableVicinity vicinity) {
     if (vicinity.column == 0) {
-      return widget.multiselect
+      return widget.multiselect && _columns.visibleColumns.isNotEmpty
           ? Icon(
               size: 14,
               color: _headerTextColor,
@@ -1461,7 +1462,7 @@ class _SilkGridSimpleViewState<T extends _SilkGridSimpleView> extends State<_Sil
   }
 
   void _selectionCheckboxChanged(int row) {
-    if (widget.multiselect) {
+    if (widget.multiselect && _columns.visibleColumns.isNotEmpty) {
       if (_selectedRows.contains(row)) {
         _selectedRows.remove(row);
       } else {
