@@ -1537,11 +1537,11 @@ class _SilkGridSimpleViewState<T extends _SilkGridSimpleView> extends State<_Sil
     }
   }
 
-  Widget _cellBuilder(BuildContext context, TableVicinity vicinity) {
+  TableViewCell _cellBuilder(BuildContext context, TableVicinity vicinity) {
     if (vicinity.row == 0) {
-      return _drawHeaderCell(context, vicinity);
+      return TableViewCell(child: _drawHeaderCell(context, vicinity));
     } else {
-      return _drawDataCell(context, vicinity);
+      return TableViewCell(child: _drawDataCell(context, vicinity));
     }
   }
 
