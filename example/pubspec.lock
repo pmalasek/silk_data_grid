@@ -164,7 +164,7 @@ packages:
     source: hosted
     version: "1.9.0"
   silk_data_grid:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
       path: ".."
       relative: true
